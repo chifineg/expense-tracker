@@ -1,13 +1,20 @@
 import React, { useState } from 'react';
+import { signup } from '../api';
 
 function Signup({ onSignup }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your signup logic here
-    onSignup();
+    const data = await signup(username, password);
+    if (data && data.token) {
+      localStorage.setItem('token', data.token);
+      onSignup();
+    } else {
+      setError(data ? data.error : 'An error occurred');
+    }
   };
 
   return (
@@ -16,13 +23,26 @@ function Signup({ onSignup }) {
       <form onSubmit={handleSubmit}>
         <div className="form-control">
           <label htmlFor="signup-username">Username</label>
-          <input type="text" id="signup-username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+          <input
+            type="text"
+            id="signup-username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
         </div>
         <div className="form-control">
           <label htmlFor="signup-password">Password</label>
-          <input type="password" id="signup-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <input
+            type="password"
+            id="signup-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
         <button type="submit">Signup</button>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
     </div>
   );

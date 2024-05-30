@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
+import { login } from '../api';
 
 function Login({ onLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your authentication logic here
-    onLogin();
+    const data = await login(username, password);
+    if (data) {
+      localStorage.setItem('token', data.token);
+      onLogin();
+    } else {
+      alert('Invalid credentials');
+    }
   };
 
   return (
